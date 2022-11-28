@@ -39,7 +39,7 @@ const QUESTS_FILE_PATH: &str = "quests.txt";
 
 pub fn run(args: Cli) -> Result<(), Box<dyn Error>> {
     match args.command {
-        Commands::Add { quest } => add_quest(quest)?,
+        Commands::Add { quest } => add_quest(&quest)?,
         Commands::List { all, interactive } => {
             if all {
                 list_quests(interactive)?
@@ -52,7 +52,7 @@ pub fn run(args: Cli) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-pub fn add_quest(quest: String) -> Result<(), Box<dyn Error>> {
+pub fn add_quest(quest: &String) -> Result<(), Box<dyn Error>> {
     let mut file = fs::OpenOptions::new()
         .create(true)
         .append(true)
@@ -70,6 +70,7 @@ pub fn add_quest(quest: String) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/// List all quests
 pub fn list_quests(interactive: bool) -> Result<(), Box<dyn Error>> {
     let contents = fs::read_to_string(QUESTS_FILE_PATH)?;
 
@@ -113,6 +114,7 @@ pub fn list_quests(interactive: bool) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/// List unfinished quests
 pub fn list_unfinished_quests() -> Result<(), Box<dyn Error>> {
     let contents = fs::read_to_string(QUESTS_FILE_PATH)?;
 
@@ -126,6 +128,7 @@ pub fn list_unfinished_quests() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+/// Save quests to file
 pub fn save_quests<T: Display>(quests: &[(T, bool)]) -> Result<(), Box<dyn Error>> {
     let contents = quests
         .iter()
@@ -144,3 +147,33 @@ pub fn save_quests<T: Display>(quests: &[(T, bool)]) -> Result<(), Box<dyn Error
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn can_add_quest() {
+        let quest = "Test quest".to_string();
+
+        add_quest(&quest).expect("Failed to add quest");
+
+        let contents = fs::read_to_string(QUESTS_FILE_PATH).expect("Failed to read quests file");
+
+        assert!(contents.contains(&quest));
+    }
+
+    #[test]
+    fn can_list_quests() {
+        let quest = "Test quest".to_string();
+
+        add_quest(&quest).expect("Failed to add quest");
+
+        list_quests(false).expect("Failed to list quests");
+
+        let contents = fs::read_to_string(QUESTS_FILE_PATH).expect("Failed to read quests file");
+
+        assert!(contents.contains(&quest));
+    }
+}                 
+

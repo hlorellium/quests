@@ -1,4 +1,7 @@
 - [ ]Do something funny again
-- [ ]Do something funny again
+- [x]Do something funny again
+- [x]Test quest
+- [x]Test quest
+- [x]Test quest
 - [x]Do something funny again
 - [x]Do something funny again
